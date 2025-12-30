@@ -29,13 +29,137 @@ Dependencies:
   tqdm
 
 Example usage:
-  python train_aggregator_lr.py \
-      --cnn_model models/audio_cnn_mel.pt \
-      --data_dir path/to/eval_dir \
-      --out models/agg_lr.joblib \
-      --clip_seconds 4.0 \
-      --n_segments 6
-"""
+    python src/train_aggregator_lr.py --cnn_model models/audio_cnn_mel.pt --data_dir data/audio/eval --out models/agg_lr.joblib --clip_seconds 4.0 --n_segments 6
+    
+    {
+  "auc": 0.9976291170062797,
+  "n_train": 1676,
+  "n_test": 559,
+  "feature_names": [
+    "cnn_median",
+    "cnn_max",
+    "cnn_var",
+    "total_seconds",
+    "silence_ratio"
+  ],
+  "threshold_metrics": [
+    {
+      "threshold": 0.3,
+      "real_accuracy": 0.9814814814814815,
+      "fake_accuracy": 0.9792387543252595,
+      "overall_accuracy": 0.9803220035778175,
+      "overall_precision": 0.9826388888888888,
+      "confusion_matrix": [
+        [
+          265,
+          5
+        ],
+        [
+          6,
+          283
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "real",
+        "fake"
+      ]
+    },
+    {
+      "threshold": 0.5,
+      "real_accuracy": 0.9888888888888889,
+      "fake_accuracy": 0.972318339100346,
+      "overall_accuracy": 0.9803220035778175,
+      "overall_precision": 0.9894366197183099,
+      "confusion_matrix": [
+        [
+          267,
+          3
+        ],
+        [
+          8,
+          281
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "real",
+        "fake"
+      ]
+    },
+    {
+      "threshold": 0.7,
+      "real_accuracy": 0.9925925925925926,
+      "fake_accuracy": 0.9515570934256056,
+      "overall_accuracy": 0.9713774597495528,
+      "overall_precision": 0.9927797833935018,
+      "confusion_matrix": [
+        [
+          268,
+          2
+        ],
+        [
+          14,
+          275
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "real",
+        "fake"
+      ]
+    },
+    {
+      "threshold": 0.85,
+      "real_accuracy": 0.9962962962962963,
+      "fake_accuracy": 0.9411764705882353,
+      "overall_accuracy": 0.9677996422182469,
+      "overall_precision": 0.9963369963369964,
+      "confusion_matrix": [
+        [
+          269,
+          1
+        ],
+        [
+          17,
+          272
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "real",
+        "fake"
+      ]
+    }
+  ],
+  "topk_metrics": [
+    {
+      "review_frac": 0.05,
+      "n_total": 559,
+      "n_review": 28,
+      "fake_total": 289,
+      "fake_caught": 28,
+      "fake_catch_rate": 0.09688581314878893,
+      "reviewed_fake_rate": 1.0
+    },
+    {
+      "review_frac": 0.1,
+      "n_total": 559,
+      "n_review": 56,
+      "fake_total": 289,
+      "fake_caught": 56,
+      "fake_catch_rate": 0.19377162629757785,
+      "reviewed_fake_rate": 1.0
+    },
+    {
+      "review_frac": 0.2,
+      "n_total": 559,
+      "n_review": 112,
+      "fake_total": 289,
+      "fake_caught": 112,
+      "fake_catch_rate": 0.3875432525951557,
+      "reviewed_fake_rate": 1.0
+    }
+  ]
+}
+    
+    """
 
 
 import argparse
