@@ -1,11 +1,13 @@
 import os
 import numpy as np
 from sklearn.metrics import accuracy_score, precision_score
-from train_baseline import file_features
 import random
 import joblib
 from collections import defaultdict
 from sklearn.metrics import confusion_matrix
+
+from src.train_baseline import file_features
+
 
 def score_eval_directory(model_path, eval_dir, sr=16000, thresh=0.5, seed=None, sample_size=None):
     """Score all (or a sample of) audio files in 'real' and 'fake' subfolders and calculate per-class and overall accuracy.
