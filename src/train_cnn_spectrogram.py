@@ -379,6 +379,13 @@ def main():
     train_ds = SpoofDataset(real_tr, fake_tr, cfg, train=True)
     val_ds = SpoofDataset(real_va, fake_va, cfg, train=False)
 
+    print(f"\n{'='*60}")
+    print(f"Training Configuration:")
+    print(f"  Real train: {len(real_tr)} | Real val: {len(real_va)}")
+    print(f"  Fake train: {len(fake_tr)} | Fake val: {len(fake_va)}")
+    print(f"  Epochs: {cfg.epochs} | Batch size: {cfg.batch_size}")
+    print(f"  Learning rate: {cfg.lr}")
+
     train_loader = DataLoader(
         train_ds, batch_size=cfg.batch_size, shuffle=True,
         num_workers=cfg.num_workers, pin_memory=torch.cuda.is_available(), drop_last=True
@@ -389,6 +396,14 @@ def main():
     )
 
     device = torch.device(cfg.device)
+    print(f"  Device: {device}")
+    if torch.cuda.is_available():
+        print(f"  GPU: {torch.cuda.get_device_name(0)}")
+        print(f"  CUDA Version: {torch.version.cuda}")
+    else:
+        print(f"  Running on CPU (training will be slower)")
+    print(f"{'='*60}\n")
+    
     model = SmallResNet(in_ch=1, base=32).to(device)
 
     # Weighted BCE for class imbalance (fake = positive class)
@@ -401,9 +416,10 @@ def main():
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
     for epoch in range(1, cfg.epochs + 1):
+        print(f"\nEpoch {epoch}/{cfg.epochs}:")
         model.train()
         running = 0.0
-        pbar = tqdm(train_loader, desc=f"epoch {epoch}/{cfg.epochs}", leave=False)
+        pbar = tqdm(train_loader, desc=f"  Training", leave=True)
 
         for xb, yb in pbar:
             xb = xb.to(device)
@@ -424,11 +440,12 @@ def main():
 
         scheduler.step()
 
+        print("  Evaluating...")
         metrics = evaluate(model, val_loader, device)
-        print(json.dumps({"epoch": epoch, "val": metrics}, indent=2))
+        print(f"  Val Accuracy: {metrics['overall_accuracy']:.4f} | Real: {metrics['real_accuracy']:.4f} | Fake: {metrics['fake_accuracy']:.4f}")
 
-        # Track best by fake_accuracy (since that's what you're currently missing)
-        score = metrics["fake_accuracy"]
+        # Track best by val_accuracy (since that's what you're currently missing)
+        score = metrics["overall_accuracy"]
         if score > best_val:
             best_val = score
             torch.save(
@@ -439,9 +456,12 @@ def main():
                 },
                 out_path
             )
-            print(f"Saved best model to {out_path} (best fake_accuracy={best_val:.4f})")
+            print(f"  ✓ New best! Saved to {out_path}")
 
-    print("Done.")
+    print(f"\n{'='*60}")
+    print(f"Training complete! Best fake accuracy: {best_val:.4f}")
+    print(f"Model saved to: {out_path}")
+    print(f"{'='*60}")
 
 
 if __name__ == "__main__":
