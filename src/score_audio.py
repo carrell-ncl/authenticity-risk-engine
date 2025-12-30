@@ -35,7 +35,7 @@ def score_eval_directory(model_path, eval_dir, sr=16000, thresh=0.5, seed=None, 
             summary[f'{label_str}_accuracy'] = None
             summary[f'{label_str}_n'] = 0
             continue
-        files = [os.path.join(class_dir, f) for f in os.listdir(class_dir) if f.endswith('.flac')]
+        files = [os.path.join(class_dir, f) for f in os.listdir(class_dir) if f.endswith('.flac') or f.endswith('.wav')]
         if sample_size is not None and sample_size < len(files):
             rng = random.Random(seed)
             files = rng.sample(files, sample_size)
