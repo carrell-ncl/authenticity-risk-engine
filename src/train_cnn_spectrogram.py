@@ -14,6 +14,18 @@ Outputs:
 
 Python 3.12 compatible if you use torch/torchaudio 2.2+.
 
+Usage:
+    python src/train_cnn_spectrogram.py \
+    --data_dir data/audio \
+    --out_path models/audio_cnn_balanced.pt \
+    --epochs 30 \
+    --batch_size 32 \
+    --clip_seconds 4.0 \
+    --lr 1e-4 \
+    --num_workers 4 \
+    --device cuda
+
+
 Install:
   pip install torch torchaudio numpy tqdm
   # (plus whatever you already have; this script does not require librosa/scikit-learn)
@@ -33,6 +45,8 @@ import torch
 import torch.nn as nn
 import torchaudio
 from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, WeightedRandomSampler
+
 from tqdm import tqdm
 
 
@@ -374,7 +388,8 @@ def main():
     # Here we compute a mild default based on train split.
     n_real = len(real_tr)
     n_fake = len(fake_tr)
-    cfg.pos_weight = float(n_real / max(1, n_fake))
+    # cfg.pos_weight = float(n_real / max(1, n_fake))
+    cfg.pos_weight = 1
 
     train_ds = SpoofDataset(real_tr, fake_tr, cfg, train=True)
     val_ds = SpoofDataset(real_va, fake_va, cfg, train=False)
@@ -386,10 +401,44 @@ def main():
     print(f"  Epochs: {cfg.epochs} | Batch size: {cfg.batch_size}")
     print(f"  Learning rate: {cfg.lr}")
 
-    train_loader = DataLoader(
-        train_ds, batch_size=cfg.batch_size, shuffle=True,
-        num_workers=cfg.num_workers, pin_memory=torch.cuda.is_available(), drop_last=True
+    # --- Balanced sampling to handle class imbalance (approx 50/50 per batch) ---
+
+    # Assuming train_ds returns (x, y) where y is 0=real, 1=fake
+    # If your dataset stores labels differently, adjust the label extraction below.
+
+    # 1) Extract labels for every item in the training dataset
+    train_labels = []
+    for i in range(len(train_ds)):
+        _, y = train_ds[i]
+        # y might be a tensor; convert safely
+        y_int = int(y) if not torch.is_tensor(y) else int(y.item())
+        train_labels.append(y_int)
+
+    train_labels = np.array(train_labels, dtype=np.int64)
+
+    # 2) Compute per-sample weights: inverse frequency
+    class_counts = np.bincount(train_labels, minlength=2)  # [n_real, n_fake]
+    class_weights = 1.0 / np.maximum(class_counts, 1)      # inverse counts
+
+    sample_weights = class_weights[train_labels]
+    sample_weights = torch.as_tensor(sample_weights, dtype=torch.double)
+
+    # 3) Sampler draws indices so batches are class-balanced over time
+    sampler = WeightedRandomSampler(
+        weights=sample_weights,
+        num_samples=len(train_ds),   # one epoch ~ same number of samples as dataset
+        replacement=True             # allows oversampling minority class
     )
+
+    train_loader = DataLoader(
+        train_ds,
+        batch_size=cfg.batch_size,
+        sampler=sampler,             # <- sampler replaces shuffle
+        num_workers=cfg.num_workers,
+        pin_memory=torch.cuda.is_available(),
+        drop_last=True,
+    )
+
     val_loader = DataLoader(
         val_ds, batch_size=cfg.batch_size, shuffle=False,
         num_workers=cfg.num_workers, pin_memory=torch.cuda.is_available()

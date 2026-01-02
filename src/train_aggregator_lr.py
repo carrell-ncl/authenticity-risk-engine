@@ -158,7 +158,135 @@ Example usage:
     }
   ]
 }
-    
+
+
+{
+  "auc": 0.9227173323640351,
+  "n_train": 3475,
+  "n_test": 1159,
+  "feature_names": [
+    "cnn_median",
+    "cnn_max",
+    "cnn_var",
+    "total_seconds",
+    "silence_ratio"
+  ],
+  "threshold_metrics": [
+    {
+      "threshold": 0.3,
+      "real_accuracy": 0.7208480565371025,
+      "fake_accuracy": 0.9679595278246206,
+      "overall_accuracy": 0.8472821397756687,
+      "overall_precision": 0.7841530054644809,
+      "confusion_matrix": [
+        [
+          408,
+          158
+        ],
+        [
+          19,
+          574
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "real",
+        "fake"
+      ]
+    },
+    {
+      "threshold": 0.5,
+      "real_accuracy": 0.8074204946996466,
+      "fake_accuracy": 0.8920741989881956,
+      "overall_accuracy": 0.8507333908541846,
+      "overall_precision": 0.829153605015674,
+      "confusion_matrix": [
+        [
+          457,
+          109
+        ],
+        [
+          64,
+          529
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "real",
+        "fake"
+      ]
+    },
+    {
+      "threshold": 0.7,
+      "real_accuracy": 0.892226148409894,
+      "fake_accuracy": 0.7335581787521079,
+      "overall_accuracy": 0.811044003451251,
+      "overall_precision": 0.8770161290322581,
+      "confusion_matrix": [
+        [
+          505,
+          61
+        ],
+        [
+          158,
+          435
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "real",
+        "fake"
+      ]
+    },
+    {
+      "threshold": 0.85,
+      "real_accuracy": 0.9611307420494699,
+      "fake_accuracy": 0.5109612141652614,
+      "overall_accuracy": 0.730802415875755,
+      "overall_precision": 0.9323076923076923,
+      "confusion_matrix": [
+        [
+          544,
+          22
+        ],
+        [
+          290,
+          303
+        ]
+      ],
+      "confusion_matrix_labels": [
+        "real",
+        "fake"
+      ]
+    }
+  ],
+  "topk_metrics": [
+    {
+      "review_frac": 0.05,
+      "n_total": 1159,
+      "n_review": 58,
+      "fake_total": 593,
+      "fake_caught": 55,
+      "fake_catch_rate": 0.09274873524451939,
+      "reviewed_fake_rate": 0.9482758620689655
+    },
+    {
+      "review_frac": 0.1,
+      "n_total": 1159,
+      "n_review": 116,
+      "fake_total": 593,
+      "fake_caught": 110,
+      "fake_catch_rate": 0.18549747048903878,
+      "reviewed_fake_rate": 0.9482758620689655
+    },
+    {
+      "review_frac": 0.2,
+      "n_total": 1159,
+      "n_review": 232,
+      "fake_total": 593,
+      "fake_caught": 215,
+      "fake_catch_rate": 0.3625632377740304,
+      "reviewed_fake_rate": 0.9267241379310345
+    }
+  ]
+} 
     """
 
 
