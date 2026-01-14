@@ -29,7 +29,7 @@ Dependencies:
   tqdm
 
 Example usage:
-    python src/train_aggregator_lr.py --cnn_model models/audio_cnn_mel.pt --data_dir data/audio/eval --out models/agg_lr.joblib --clip_seconds 4.0 --n_segments 6
+    python src/train_aggregator_lr.py --cnn_model models/cnn/audio_cnn_balanced_best.pt --data_dir data/audio/processed/real_or_fake --out models/agg_lr_real_or_fake_new.joblib --clip_seconds 4.0 --n_segments 6
     
     {
   "auc": 0.9976291170062797,

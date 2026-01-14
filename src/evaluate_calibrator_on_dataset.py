@@ -17,7 +17,7 @@ Expected directory layout:
 
 Usage example:
     python src/evaluate_calibrator_on_dataset.py \
-  --cnn_model models/audio_cnn_mel.pt \
+  --cnn_model models/cnn/audio_cnn_balanced_best.pt \
   --calibrator models/agg_lr_real_or_fake.joblib \
   --data_dir data/audio/eval \
   --device cuda

@@ -205,7 +205,7 @@ def score_cnn_eval_directory(
 
 # Example usage:
 # results = score_cnn_eval_directory(
-#     "models/audio_cnn_mel.pt",
+#     "models/cnn/audio_cnn_balanced_best.pt",
 #     "data/audio/eval",
 #     exts=(".wav", ".flac"),     # include wav here
 #     recursive=True              # if your dataset has nested folders

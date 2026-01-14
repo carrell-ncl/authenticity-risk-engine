@@ -16,7 +16,7 @@ Python 3.12 compatible if you use torch/torchaudio 2.2+.
 
 Usage:
     python src/train_cnn_spectrogram.py \
-    --data_dir data/audio \
+    --data_dir data/audio/train \
     --out_path models/audio_cnn_balanced.pt \
     --epochs 30 \
     --batch_size 32 \

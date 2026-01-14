@@ -8,11 +8,92 @@ A system that prioritises suspicious audio for investigation, rather than making
 
 A configurable authenticity risk engine that plugs into investigation workflows and reduces review cost.
 
+# Usage
+
+Run API:
+uvicorn api.audio_det.app:app --host 0.0.0.0 --port 8000
+
+Optiona - Hit curl:
+curl -F "file=@//Users/stevencarrell/Desktop/dev/authenticity-risk-engine/data/audio/processed/asvspoof_2021_df/fake/DF_E_2000011.flac" \
+  "http://localhost:8000/v1/score?threshold=0.8"
+
+
+Run Streamlit:
+streamlit run streamlit/
+
+
 # Datasets
 https://datashare.ed.ac.uk/handle/10283/3336
 https://zenodo.org/records/4835108
 https://www.kaggle.com/datasets/mohammedabdeldayem/the-fake-or-real-dataset?resource=download
 
+# Results
+Model Evaluation Summary
+
+This system was evaluated on a balanced dataset of 4,000 audio clips (2,000 real, 2,000 fake).
+Each audio file was processed into 6 × 4-second segments, scored by a CNN spoof-detection model, and aggregated using the median segment score.
+
+Two configurations were evaluated:
+
+CNN-only (raw spoof signal)
+
+CNN + feature-based calibration layer (logistic regression over aggregated features)
+
+CNN-Only Model (Baseline Signal)
+
+AUC: 0.829
+
+Strengths: High fake detection rate, strong ranking ability
+
+Limitations: Elevated false-positive rate on real audio
+
+At a representative operating point (threshold = 0.5):
+
+Fake accuracy: 94.5%
+
+Real accuracy: 56.2%
+
+Overall accuracy: 75.3%
+
+Precision: 68.3%
+
+Top-K review performance (ranking use case):
+
+Reviewing 10% of highest-risk clips captures 17.6% of all fake audio
+
+Reviewed set purity ≈ 88% fake
+
+This confirms the CNN provides a strong raw spoof signal, suitable for downstream calibration and risk ranking.
+
+Calibrated Model (Production Configuration)
+
+The calibrated model uses aggregated CNN signals and audio-level features:
+
+cnn_median, cnn_max, cnn_var
+
+total_seconds, silence_ratio
+
+AUC: 0.894
+
+Key improvement: Substantially better balance between real and fake classification
+
+At the recommended operating point (threshold = 0.5):
+
+Fake accuracy: 84.9%
+
+Real accuracy: 77.9%
+
+Overall accuracy: 81.5%
+
+Precision: 79.4%
+
+Top-K review performance:
+
+Reviewing 10% of highest-risk clips captures 18.8% of all fake audio
+
+Reviewed set purity ≈ 94% fake
+
+Reviewing 20% captures 36.8% of all fake audio
 
 ## High-level design
 

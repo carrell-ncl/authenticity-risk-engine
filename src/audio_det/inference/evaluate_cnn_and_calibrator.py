@@ -15,9 +15,9 @@ Workflow:
 
 Example:
 python src/inference/evaluate_cnn_and_calibrator.py \
-  --cnn_model models/audio_cnn_mel.pt \
-  --data_dir data/audio/processed/asvspoof_2021_df \
-  --calibrator models/agg_lr_real_or_fake.joblib \
+  --cnn_model models/cnn/audio_cnn_balanced_best.pt \
+  --data_dir data/audio/processed/real_or_fake \
+  --calibrator models/calibrators/agg_lr_real_or_fake.joblib \
   --device cpu \
   --sample_per_class 2000 \
   --seed 42
