@@ -216,6 +216,7 @@ class ScorerConfig:
     cnn_agg: str = "median"
     low_thr: float = 0.3
     high_thr: float = 0.7
+    cnn_override_thr: float = 0.99999
 
 
 class AudioSpoofScorer:
@@ -279,7 +280,24 @@ class AudioSpoofScorer:
         if self.calibrator is not None:
             calibrated_score = float(self.calibrator.predict_proba(feats.reshape(1, -1))[0, 1])
 
-        score = calibrated_score if calibrated_score is not None else float(cnn_score)
+        # --- override logic ---
+        cnn_med = float(np.median(seg_probs))
+        cnn_max = float(np.max(seg_probs))
+        cnn_var = float(np.var(seg_probs))
+
+        override = (
+            float(cnn_score) >= float(self.config.cnn_override_thr)
+            and cnn_med >= 0.95
+            and cnn_max >= 0.98
+            and cnn_var <= 0.01
+        )
+
+        if calibrated_score is None:
+            score = float(cnn_score)
+        else:
+            score = float(cnn_score) if override else float(calibrated_score)
+
+
 
         decision = None
         if threshold is not None:
