@@ -1,0 +1,47 @@
+git clone https://huggingface.co/datasets/prithivMLmods/Deepfake-vs-Real-v2
+
+# 0) Make sure you're in the repo
+cd "C:\Users\Steve\desktop\dev\Deepfake-vs-Real-60K"
+
+# 1) Stop any stuck LFS operation (safe even if nothing running)
+git lfs stop
+
+# 2) Delete the corrupted ZIP
+Remove-Item -Force .\deepfake-vs-real-60k.zip
+
+# 3) Delete the LFS cache (this is the big ~19GB folder)
+Remove-Item -Recurse -Force .git\lfs
+
+# 4) Re-download the LFS file cleanly
+git lfs fetch --all
+
+# 5) Materialize it into your folder (creates the zip again)
+git lfs checkout
+
+# 6) Verify the ZIP is healthy
+& "C:\Program Files\7-Zip\7z.exe" t .\deepfake-vs-real-60k.zip
+
+
+✅ Extract (after the test passes)
+# Optional but recommended: extract to a short path
+New-Item -ItemType Directory -Force C:\data\df60k | Out-Null
+
+& "C:\Program Files\7-Zip\7z.exe" x .\deepfake-vs-real-60k.zip -oC:\data\df60k -y
+
+
+## Face forensics 
+# Clone repo
+git clone https://github.com/ondyari/FaceForensics.git
+cd FaceForensics
+
+# Install dependencies
+pip install requests tqdm
+
+# Download (use credentials from email)
+python download-FaceForensics.py \
+    --server EU \
+    --dataset FaceForensics++ \
+    --compression c23 \
+    --type images \
+    --num_videos all \
+    --output_path "c:/Users/Steve/Desktop/dev/authenticity-risk-engine/data/image_det/FaceForensics++"
